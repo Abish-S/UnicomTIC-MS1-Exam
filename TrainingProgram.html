@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Programs</title>
+    <style>
+        #grid {
+            display: grid;
+            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            background-color: beige;
+            border: none;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .modal {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #000;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .modal-body {
+            font-size: 18px;
+        }
+
+        .grid-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .grid-item:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Training Programs</h1>
+    <button id="openModalBtn">Add Training Program</button>
+
+    <div class="modal" id="myModal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 class="modal-title">Add New Program</h2>
+            <div class="modal-body">
+                <form id="formview" action="#" method="post">
+                    <div class="form-group">
+                        <label for="programId">Program ID</label>
+                        <input type="text" id="programId" required><br>
+                    </div>
+                    <div class="form-group">
+                        <label for="programName">Program Name</label>
+                        <input type="text" id="programName" required><br>
+                    </div>
+                    <div class="form-group">
+                        <label for="fees">Fees</label>
+                        <input type="number" id="fees" required><br>
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duration</label>
+                        <input type="text" id="duration" required><br>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" required></textarea><br>
+                    </div>
+                    <div class="form-group">
+                        <label for="image">Program Image URL</label>
+                        <input type="url" id="image" required><br>
+                    </div>
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="grid"></div>
+
+    <script>
+        let trainingPrograms = [
+            {
+                programId: "P001",
+                programName: "Weight Training",
+                fees: "$100",
+                duration: "4 weeks",
+                description: "A comprehensive weight training program designed to build muscle and increase strength.",
+                image: "img1.jpg"
+            },
+            {
+                programId: "P002",
+                programName: "Aerobics",
+                fees: "$80",
+                duration: "6 weeks",
+                description: "A high-energy aerobic exercise program to improve cardiovascular fitness.",
+                image: "img2.jpg"
+            },
+            {
+                programId: "P003",
+                programName: "Yoga",
+                fees: "$90",
+                duration: "8 weeks",
+                description: "A holistic yoga program focusing on flexibility and relaxation.",
+                image: "img3.jpg"
+            },
+            {
+                programId: "P004",
+                programName: "High-Intensity Interval Training (HIIT)",
+                fees: "$110",
+                duration: "5 weeks",
+                description: "An intense HIIT program designed to maximize calorie burn.",
+                image: "img4.jpg"
+            }
+        ];
+
+
+        if(!localStorage.getItem("trainingPrograms")){
+            localStorage.setItem("trainingPrograms",JSON.stringify(trainingPrograms));
+        }
+        let storedPrograms=JSON.parse(localStorage.getItem("trainingPrograms"));
+
+
+        function renderGrid() {
+            const grid = document.getElementById("grid");
+            grid.innerHTML = "";
+            trainingPrograms.forEach(program => {
+                const div = document.createElement("div");
+                div.classList.add("grid-item");
+                div.innerHTML = `
+                    <img src="${program.image}" alt="${program.programName}" width="250" height="300">
+                    <h2>${program.programId}</h2>
+                    <h2>${program.programName}</h2>
+                    <h2>${program.fees}</h2>
+                    <h2>${program.duration}</h2>
+                `;
+                
+    
+                div.addEventListener("click", () => {
+                    window.location.href = `enrollments.html?programId=${program.programId}`;
+                });
+
+                grid.appendChild(div);
+            });
+        }
+
+        renderGrid();
+
+        const modal = document.getElementById("myModal");
+        const openModalBtn = document.getElementById("openModalBtn");
+        const closeBtn = document.querySelector(".close-btn");
+
+        openModalBtn.addEventListener("click", () => {
+            modal.style.display = "block";
+        });
+
+        closeBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+
+        window.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+
+        const form = document.getElementById("formview");
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const newProgram = {
+                programId: document.getElementById("programId").value,
+                programName: document.getElementById("programName").value,
+                fees: document.getElementById("fees").value,
+                duration: document.getElementById("duration").value,
+                description: document.getElementById("description").value,
+                image: document.getElementById("image").value
+            };
+            trainingPrograms.push(newProgram);
+            localStorage.setItem("trainingPrograms", JSON.stringify(trainingPrograms));
+            renderGrid();
+            modal.style.display = "none"; // Close modal after submission
+        });
+    </script>
+</body>
+
+</html>
